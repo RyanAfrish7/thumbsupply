@@ -1,7 +1,7 @@
 {
   "name": "thumbsupply",
   "version": "0.0.1",
-  "description": "Asynchronous thumbnail supplier for Node.js",
+  "description": "Asynchronous thumbnail supplier with caching for Node.js",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -13,6 +13,7 @@
   ],
   "author": "Afrish Khan S <ryanafrish7@gmail.com>",
   "license": "MIT",
+  "repository": "https://github.com/RyanAfrish7/thumbsupply.git",
   "dependencies": {
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^4.0.2",
