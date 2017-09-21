@@ -5,28 +5,6 @@ const SAMPLE_VIDEO = 'test/SampleVideo_1280x720_1mb.mp4';
 
 describe('thumbsupply', () => {
 
-    describe('#sha256()', () => {
-        let thumbsupply;
-
-        before(() => {
-            thumbsupply = require('../')('9e4b60777853e39420e058c54e46b3b8');
-        });
-
-        it('should hash the file', done => {
-            thumbsupply.sha256(SAMPLE_VIDEO)
-                .then(hash => {
-                    assert.equal(hash, 'f25b31f155970c46300934bda4a76cd2f581acab45c49762832ffdfddbcf9fdd');
-                    done();
-                })
-                .catch(done);
-        });
-
-        after((done) => {
-            fs.remove(path.join(require('os').homedir(), '.cache', '9e4b60777853e39420e058c54e46b3b8'), done);
-        });
-
-    });
-
     describe('#generateThumbnail()', () => {
         let thumbsupply;
 

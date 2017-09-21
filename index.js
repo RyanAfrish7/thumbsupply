@@ -1,16 +1,17 @@
-const fs = require('fs-extra');
-const path = require('path');
-const os = require('os');
-const crypto = require('crypto');
-const _ = require('lodash');
-const ffmpeg = require('fluent-ffmpeg');
+const fs = require("fs-extra");
+const path = require("path");
+const os = require("os");
+const crypto = require("crypto");
+const _ = require("lodash");
+const ffmpeg = require("fluent-ffmpeg");
+const fileUrl = _.bind(require('file-url'), null, _, {resolve: false});
 
 module.exports = function (appId) {
 
     const thumbfactory = {};
 
     thumbfactory.appId = appId;
-    thumbfactory.thumbCacheDir = path.join(os.homedir(), '.cache', appId, 'thumbsupply');
+    thumbfactory.thumbCacheDir = path.join(os.homedir(), ".cache", appId, "thumbsupply");
     thumbfactory._defaultOptions = {
         width: 320,
         height: 240,
@@ -29,39 +30,27 @@ module.exports = function (appId) {
     };
 
     thumbfactory.sha256 = file => {
-        return new Promise((resolve, reject) => {
-            const hash = crypto.createHash('sha256');
-
-            const input = fs.createReadStream(file);
-            input.on('readable', () => {
-                const data = input.read();
-                if (data)
-                    hash.update(data);
-                else {
-                    resolve(hash.digest('hex'));
-                }
-            });
-            input.on('error', reject);
-        });
+        const hash = crypto.createHash("sha256");
+        hash.update(file);
+        return hash.digest('hex');
     };
 
     thumbfactory.createThumbnail = (video, options) => {
         return new Promise((resolve, reject) => {
-            thumbfactory.sha256(video).then(hash => {
-                options = _.defaults(options, thumbfactory._defaultOptions);
+            const hash = thumbfactory.sha256(fileUrl(video));
+            options = _.defaults(options, thumbfactory._defaultOptions);
 
-                options = {
-                    size: `${options.width}x${options.height}`,
-                    timestamps: [options.timestamp],
-                    filename: `${hash}-%r.png`,
-                    folder: thumbfactory.thumbCacheDir
-                };
+            options = {
+                size: `${options.width}x${options.height}`,
+                timestamps: [options.timestamp],
+                filename: `${hash}-%r.png`,
+                folder: thumbfactory.thumbCacheDir
+            };
 
-                ffmpeg(video)
-                    .on('end', () => resolve(path.join(thumbfactory.thumbCacheDir, options.filename)))
-                    .on('error', reject)
-                    .screenshots(options);
-            });
+            ffmpeg(video)
+                .on("end", () => resolve(path.join(thumbfactory.thumbCacheDir, options.filename)))
+                .on("error", reject)
+                .screenshots(options);
         });
     };
 
@@ -91,24 +80,22 @@ module.exports = function (appId) {
                 if (err) return reject(err);
 
                 const videoModifiedTime = stats.mtime;
+                const hash = thumbfactory.sha256(fileUrl(video));
+                const thumbnailPath = path.join(thumbfactory.thumbCacheDir, `${hash}-${options.width}x${options.height}.png`);
 
-                thumbfactory.sha256(video).then(hash => {
-                    const thumbnailPath = path.join(thumbfactory.thumbCacheDir, `${hash}-${options.width}x${options.height}.png`);
-                    fs.stat(thumbnailPath, (err, stats) => {
-                        if (err) return reject(err);
+                fs.stat(thumbnailPath, (err, stats) => {
+                    if (err) return reject(err);
 
-                        if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
-                            // FIXME throw error with the expired thumbnail
-                            reject(new Error('Thumbnail Expired'));
-                        } else {
-                            resolve(thumbnailPath)
-                        }
-                    });
+                    if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
+                        // FIXME throw error with the expired thumbnail
+                        reject(new Error("Thumbnail Expired"));
+                    } else {
+                        resolve(thumbnailPath);
+                    }
                 });
             });
         })
     };
-
 
     return thumbfactory;
 };
