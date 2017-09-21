@@ -1,6 +1,6 @@
 {
   "name": "thumbsupply",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Asynchronous thumbnail supplier with caching for Node.js",
   "main": "index.js",
   "scripts": {
