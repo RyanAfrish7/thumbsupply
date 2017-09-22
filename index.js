@@ -2,21 +2,23 @@ const fs = require("fs-extra");
 const path = require("path");
 const os = require("os");
 const crypto = require("crypto");
-const _ = require("lodash");
 const ffmpeg = require("fluent-ffmpeg");
-const fileUrl = _.bind(require('file-url'), null, _, {resolve: false});
+const _fileUrl = require('file-url');
+const fileUrl = file => {
+    return _fileUrl(file, {resolve: false});
+};
 
 module.exports = function (appId) {
 
     const thumbfactory = {};
-
-    thumbfactory.appId = appId;
-    thumbfactory.thumbCacheDir = path.join(os.homedir(), ".cache", appId, "thumbsupply");
-    thumbfactory._defaultOptions = {
+    const defaultOptions = {
         width: 320,
         height: 240,
         timestamp: "10%"
     };
+
+    thumbfactory.appId = appId;
+    thumbfactory.thumbCacheDir = path.join(os.homedir(), ".cache", appId, "thumbsupply");
 
     fs.ensureDirSync(thumbfactory.thumbCacheDir);
 
@@ -38,12 +40,13 @@ module.exports = function (appId) {
     thumbfactory.createThumbnail = (video, options) => {
         return new Promise((resolve, reject) => {
             const hash = thumbfactory.sha256(fileUrl(video));
-            options = _.defaults(options, thumbfactory._defaultOptions);
+
+            options = Object.assign(defaultOptions, options);
 
             options = {
                 size: `${options.width}x${options.height}`,
                 timestamps: [options.timestamp],
-                filename: `${hash}-%r.png`,
+                filename: `${hash}-${options.width}x${options.height}.png`,
                 folder: thumbfactory.thumbCacheDir
             };
 
@@ -74,7 +77,7 @@ module.exports = function (appId) {
 
     thumbfactory.lookupThumbnail = (video, options) => {
         return new Promise((resolve, reject) => {
-            options = _.defaults(options, thumbfactory._defaultOptions);
+            options = Object.assign(defaultOptions, options);
 
             fs.stat(video, (err, stats) => {
                 if (err) return reject(err);

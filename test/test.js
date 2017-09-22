@@ -12,8 +12,19 @@ describe('thumbsupply', () => {
             thumbsupply = require('../')('9e4b60777853e39420e058c54e46b3b8');
         });
 
-        it('should be creating the thumbnail', () => {
-            return thumbsupply.generateThumbnail(SAMPLE_VIDEO);
+        it('should be creating the thumbnail', done => {
+            thumbsupply.generateThumbnail(SAMPLE_VIDEO)
+                .then(thumbnail => fs.stat(thumbnail, done))
+                .catch(done);
+        });
+
+        it('should be creating the thumbnail as specified', done => {
+            thumbsupply.generateThumbnail(SAMPLE_VIDEO, {
+                width: 100,
+                height: 100,
+                timestamp: '5%'
+            }).then(thumbnail => fs.stat(thumbnail, done))
+                .catch(done);
         });
 
         after((done) => {
@@ -44,6 +55,6 @@ describe('thumbsupply', () => {
         after((done) => {
             fs.remove(path.join(require('os').homedir(), '.cache', '9e4b60777853e39420e058c54e46b3b8'), done);
         });
+    });
 
-    })
 });
