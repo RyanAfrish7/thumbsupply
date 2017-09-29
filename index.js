@@ -1,104 +1,101 @@
 const fs = require("fs-extra");
-const path = require("path");
-const os = require("os");
-const crypto = require("crypto");
-const ffmpeg = require("fluent-ffmpeg");
-const _fileUrl = require('file-url');
-const fileUrl = file => {
-    return _fileUrl(file, {resolve: false});
-};
+const mimetypes = require("mime-types");
 
-module.exports = function (appId) {
+class ThumbSupply {
 
-    const thumbfactory = {};
-    const defaultOptions = {
-        width: 320,
-        height: 240,
-        timestamp: "10%"
-    };
+    get _defaultOptions() {
+        return {
+            forceCreate: false,
+            size: this.ThumbSize.LARGE
+        };
+    }
 
-    thumbfactory.appId = appId;
-    thumbfactory.thumbCacheDir = path.join(os.homedir(), ".cache", appId, "thumbsupply");
+    get ThumbSize() {
+        return Object.freeze({
+            MEDIUM: {
+                name: '240p',
+                width: 240,
+                height: 240
+            },
 
-    fs.ensureDirSync(thumbfactory.thumbCacheDir);
-
-    thumbfactory.emptyCache = () => {
-        return new Promise((resolve, reject) => {
-            fs.remove(thumbCacheDir, err => {
-                if(err) return reject(err);
-                resolve();
-            });
+            LARGE: {
+                name: '480p',
+                width: 480,
+                height: 480
+            }
         });
-    };
+    }
 
-    thumbfactory.sha256 = file => {
-        const hash = crypto.createHash("sha256");
-        hash.update(file);
-        return hash.digest('hex');
-    };
+    constructor() {
+        this._thumbSuppliers = new Map();
+        this._registerThumbSupplier("video/*", require('./thumbs/video-thumb'));
+    }
 
-    thumbfactory.createThumbnail = (video, options) => {
+    _registerThumbSupplier(mimetype, ThumbSupplier) {
+        this._thumbSuppliers.set(mimetype, ThumbSupplier);
+    }
+
+    _fetchThumbnailSupplier(file, options) {
+        const mime = mimetypes.lookup(file);
+        let Supplier;
+
+        if (this._thumbSuppliers.has(mime)) {
+            Supplier = this._thumbSuppliers.get(mime);
+        } else if (this._thumbSuppliers.has(mime.replace(/(\w+\/)(\w+)/, "$1*"))) {
+            Supplier = this._thumbSuppliers.get(mime.replace(/(\w+\/)(\w+)/, "$1*"));
+        } else {
+            throw new Error("FileType has no associated ThumbSupplier");
+        }
+
+        return new Supplier(options);
+    }
+
+    generateThumbnail(file, options) {
         return new Promise((resolve, reject) => {
-            const hash = thumbfactory.sha256(fileUrl(video));
+            options = Object.assign(this._defaultOptions, options || {});
 
-            options = Object.assign(defaultOptions, options);
+            const supplier = this._fetchThumbnailSupplier(file, options);
 
-            options = {
-                size: `${options.width}x${options.height}`,
-                timestamps: [options.timestamp],
-                filename: `${hash}-${options.width}x${options.height}.png`,
-                folder: thumbfactory.thumbCacheDir
-            };
-
-            ffmpeg(video)
-                .on("end", () => resolve(path.join(thumbfactory.thumbCacheDir, options.filename)))
-                .on("error", reject)
-                .screenshots(options);
-        });
-    };
-
-    thumbfactory.generateThumbnail = (video, options) => {
-        return new Promise((resolve, reject) => {
-            if(options && options.forceCreate) {
-                thumbfactory.createThumbnail(video, options)
+            if (options.forceCreate) {
+                supplier.createThumbnail(file)
                     .then(resolve)
                     .catch(reject);
             } else {
-                thumbfactory.lookupThumbnail(video, options)
+                this.lookupThumbnail(file, options)
                     .then(resolve)
                     .catch(() => {
-                        thumbfactory.createThumbnail(video, options)
+                        supplier.createThumbnail(file)
                             .then(resolve)
                             .catch(reject);
                     });
             }
         });
-    };
+    }
 
-    thumbfactory.lookupThumbnail = (video, options) => {
+    lookupThumbnail(file, options) {
         return new Promise((resolve, reject) => {
-            options = Object.assign(defaultOptions, options);
+            options = Object.assign(this._defaultOptions, options || {});
 
-            fs.stat(video, (err, stats) => {
+            fs.stat(file, (err, stats) => {
                 if (err) return reject(err);
 
                 const videoModifiedTime = stats.mtime;
-                const hash = thumbfactory.sha256(fileUrl(video));
-                const thumbnailPath = path.join(thumbfactory.thumbCacheDir, `${hash}-${options.width}x${options.height}.png`);
+                const supplier = this._fetchThumbnailSupplier(file, options);
+                const thumbnailPath = supplier.getThumbnailLocation(file);
 
                 fs.stat(thumbnailPath, (err, stats) => {
                     if (err) return reject(err);
 
                     if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
-                        // FIXME throw error with the expired thumbnail
+                        // TODO throw custom error
                         reject(new Error("Thumbnail Expired"));
                     } else {
                         resolve(thumbnailPath);
                     }
                 });
             });
-        })
-    };
+        });
+    }
+}
 
-    return thumbfactory;
-};
+module.exports = new ThumbSupply();

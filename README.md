@@ -2,6 +2,18 @@
 Asynchronous Node.js module to create, cache and fetch thumbnails from
 videos. It uses **ffmpeg** to generate thumbnails and **ES6 Promise**.
 
+NOT recommended for production use! The package is still in early
+stage and the public API's tend to change at any time.
+
+Any experimental usage is appreciated. Healthy criticisms, feature
+requests and issues are welcome.
+
+## Installation
+
+```bash
+npm install thumbsupply
+```
+
 ## Usage
 
 ### Generating Thumbnails
@@ -13,8 +25,8 @@ recommended to work on a copy.
 Using `generateThumbnail()` method by default enables caching to speeden
 up the process.
 
-```
-const thumbsupply = require('thumbsupply')("your.application.id");
+```javascript
+const thumbsupply = require('thumbsupply');
 
 thumbsupply.generateThumbnail('some-video.mp4')
     .then(thumb => {
@@ -25,10 +37,11 @@ thumbsupply.generateThumbnail('some-video.mp4')
 It accepts options to control timestamp and size of the thumbnail. The
 `forceCreate` option can be used to generate the thumbnail every time.
 
-```
+```javascript
+const thumbsupply = require('thumbsupply');
+
 thumbsupply.generateThumbnail('some-video.mp4', {
-    width: 720,
-    height: 405,
+    size: thumbsupply.ThumbSize.MEDIUM, // or ThumbSize.LARGE
     timestamp: "10%", // or `30` for 30 seconds
     forceCreate: true
 })
