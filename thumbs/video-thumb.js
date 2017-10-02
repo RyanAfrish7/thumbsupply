@@ -13,23 +13,47 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
         return new Promise((resolve, reject) => {
             const hash = ThumbnailSupplier.hashFile(video);
 
-            ffmpeg(video)
-                .on("end", () => resolve(super.getThumbnailLocation(video)))
-                .on("error", reject)
-                .screenshots({
-                    size: `${this.size.width}x${this.size.height}`,
-                    timestamps: [this.timestamp],
-                    filename: ThumbnailSupplier.getThumbnailFileName(video),
-                    folder: this.cacheDir
+            this.getVideoDimension(video)
+                .then(this.getOptimalThumbnailResolution.bind(this))
+                .then(res => {
+                    ffmpeg(video)
+                        .on("end", () => resolve(super.getThumbnailLocation(video)))
+                        .on("error", reject)
+                        .screenshots({
+                            size: `${res.width}x${res.height}`,
+                            timestamps: [this.timestamp],
+                            filename: ThumbnailSupplier.getThumbnailFileName(video),
+                            folder: this.cacheDir
+                        });
                 });
         });
     }
 
-    // FIXME thumbnails are stretched to square
+    getVideoDimension(video) {
+        return new Promise((resolve, reject) => {
+            ffmpeg.ffprobe(video, (err, metadata) => {
+                if (err) return reject(err);
+                resolve({
+                    width: metadata.streams[0].width,
+                    height: metadata.streams[0].height
+                });
+            })
+        });
+    }
 
-    // ffmpeg.ffprobe(video, function(err, metadata) {
-    //     console.dir(metadata);
-    // });
+    getOptimalThumbnailResolution(videoDimension) {
+        if(videoDimension.width > videoDimension.height) {
+            return {
+                width: this.size.width,
+                height: this.size.width * videoDimension.height / videoDimension.width
+            }
+        } else {
+            return {
+                width: this.size.height * videoDimension.width / videoDimension.height,
+                height: this.size.height
+            }
+        }
+    }
 }
 
 module.exports = VideoThumbnailSupplier;

@@ -32,7 +32,10 @@ describe('thumbsupply', () => {
             })
                 .then(thumbnail => {
                     createdThumbnail = thumbnail;
-                    testResolution(thumbnail, thumbsupply.ThumbSize.LARGE, done);
+                    testResolution(thumbnail, {
+                        width: 480,
+                        height: 270
+                    }, done);
                 })
                 .catch(done);
         });
@@ -43,7 +46,10 @@ describe('thumbsupply', () => {
             })
                 .then(thumbnail => {
                     createdThumbnail = thumbnail;
-                    testResolution(thumbnail, thumbsupply.ThumbSize.MEDIUM, done);
+                    testResolution(thumbnail, {
+                        width: 240,
+                        height: 135
+                    }, done);
                 })
                 .catch(done);
         });
