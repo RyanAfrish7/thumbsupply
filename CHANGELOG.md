@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - BREAKING
+## [0.2.0] - BREAKING
 
 ### Added
 
@@ -19,8 +19,8 @@ formats like pictures, music and others in future.
 ### Removed
 
 + Per-application thumbnails are no longer valid
-+ All previous methods are removed and are now available under an ES6
-class. Refer docs of this version.
++ All previous methods are removed and are now available through an ES6
+object.
 
 ### Fixed
 
@@ -47,3 +47,7 @@ file uri.
 ### Fixed
 
 + Reduced time to lookup for thumbnails.
+
+## [Unreleased]
+
+TO BE DOCUMENTED

@@ -8,6 +8,10 @@ stage and the public API's tend to change at any time.
 Any experimental usage is appreciated. Healthy criticisms, feature
 requests and issues are welcome.
 
+*NOTE*: Since v0.2, the module no longer maintains thumbnails separately
+for each application. This behavior is intended to improve the performance
+and utilize caching as far as possible.
+
 ## Installation
 
 ```bash
@@ -50,6 +54,33 @@ thumbsupply.generateThumbnail('some-video.mp4', {
 *NOTE:* Thumbnails which are older than the video get expired
 automatically.
 
-### Clearing Cache
+### Look up Thumbnails
 
-The method `emptyCache()` can be used to clear the cache.
+Instead of creating a thumbnail, sometimes you may need to get the
+thumbnail if it exists.
+
+```javascript
+const thumbsupply = require('thumbsupply');
+
+thumbsupply.lookupThumbnail('some-video.mp4')
+    .then(thumb => {
+        // serve thumbnail
+    })
+    .catch(err => {
+        // thumbnail doesn't exist
+    });
+```
+
+## Features on the way
+
+_thumbsupply_ will soon be supporting music, pictures and so on. The
+architecture required is already shipped.
+
+Developers can experiment with some of the non public API's to create
+thumbnail suppliers supporting new formats. Documentation on how to do
+that will be released with the production version.
+
+## External bugs
+
++ _ffmpeg_ is producing screenshots which mismatch the exact resolution
+specified by 1 unit.

@@ -25,6 +25,17 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
                             filename: ThumbnailSupplier.getThumbnailFileName(video),
                             folder: this.cacheDir
                         });
+                })
+                .catch(err => {
+                    ffmpeg(video)
+                        .on("end", () => resolve(super.getThumbnailLocation(video)))
+                        .on("error", reject)
+                        .screenshots({
+                            size: `${this.size.width}x${this.size.height}`,
+                            timestamps: [this.timestamp],
+                            filename: ThumbnailSupplier.getThumbnailFileName(video),
+                            folder: this.cacheDir
+                        });
                 });
         });
     }
