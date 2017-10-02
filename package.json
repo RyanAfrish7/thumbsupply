@@ -4,7 +4,8 @@
   "description": "Asynchronous thumbnail supplier with caching for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "cover": "istanbul cover _mocha"
   },
   "keywords": [
     "thumbnail",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "image-size": "^0.6.1",
+    "istanbul": "^0.4.5",
     "mocha": "^3.5.3"
   }
 }
