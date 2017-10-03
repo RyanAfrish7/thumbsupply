@@ -1,6 +1,8 @@
 const fs = require("fs-extra");
 const mimetypes = require("mime-types");
 
+const E = require("./thumb-errors.js");
+
 class ThumbSupply {
 
     get _defaultOptions() {
@@ -28,7 +30,7 @@ class ThumbSupply {
 
     constructor() {
         this._thumbSuppliers = new Map();
-        this._registerThumbSupplier("video/*", require('./thumbs/video-thumb'));
+        this._registerThumbSupplier("video/*", require("./thumbs/video-thumb"));
     }
 
     _registerThumbSupplier(mimetype, ThumbSupplier) {
@@ -41,10 +43,10 @@ class ThumbSupply {
 
         if (this._thumbSuppliers.has(mime)) {
             Supplier = this._thumbSuppliers.get(mime);
-        } else if (this._thumbSuppliers.has(mime.replace(/(\w+\/)(\w+)/, "$1*"))) {
-            Supplier = this._thumbSuppliers.get(mime.replace(/(\w+\/)(\w+)/, "$1*"));
+        } else if (this._thumbSuppliers.has(mime.replace(/(.+\/)(.+)/, "$1*"))) {
+            Supplier = this._thumbSuppliers.get(mime.replace(/(.+\/)(.+)/, "$1*"));
         } else {
-            throw new Error("FileType has no associated ThumbSupplier");
+            throw new E.UnknownFiletypeError(file, mime, "FileType has no associated ThumbnailSupplier");
         }
 
         return new Supplier(options);
@@ -88,7 +90,7 @@ class ThumbSupply {
 
                     if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
                         // TODO throw custom error
-                        reject(new Error("Thumbnail Expired"));
+                        reject(new E.ThumbnailExpiredError(thumbnailPath, "Thumbnail Expired"));
                     } else {
                         resolve(thumbnailPath);
                     }

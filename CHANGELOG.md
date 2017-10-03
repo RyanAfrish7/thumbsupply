@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 This project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.2.1]
+
+### Added
+
++ Custom errors are thrown for expired thumbnails and unassociated
+filetypes.
+
+### Fixed
+
++ Fixed a RegEx bug which rejected some of the associated file types.
+
 ## [0.2.0] - BREAKING
 
 ### Added
