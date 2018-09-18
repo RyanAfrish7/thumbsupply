@@ -89,7 +89,6 @@ class ThumbSupply {
                     if (err) return reject(err);
 
                     if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
-                        // TODO throw custom error
                         reject(new E.ThumbnailExpiredError(thumbnailPath, "Thumbnail Expired"));
                     } else {
                         resolve(thumbnailPath);
