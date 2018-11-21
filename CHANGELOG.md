@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.3.1]
+
+### Fixed
+
++ Handled the case where mimetype of the file is not known
+
+### Added
+
++ Allow mimetype to be passed in along with the options
+
 ## [0.2.1]
 
 ### Added

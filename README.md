@@ -39,7 +39,10 @@ thumbsupply.generateThumbnail('some-video.mp4')
 ```
 
 It accepts options to control timestamp and size of the thumbnail. The
-`forceCreate` option can be used to generate the thumbnail every time.
+`forceCreate` option can be used to generate the thumbnail every 
+time. Mimetype of the file can be specified using `mimetype` 
+option. It overrides mimetype derived from the file extension and 
+can be used for cases where such derivation is not possible.
 
 ```javascript
 const thumbsupply = require('thumbsupply');
@@ -47,7 +50,8 @@ const thumbsupply = require('thumbsupply');
 thumbsupply.generateThumbnail('some-video.mp4', {
     size: thumbsupply.ThumbSize.MEDIUM, // or ThumbSize.LARGE
     timestamp: "10%", // or `30` for 30 seconds
-    forceCreate: true
+    forceCreate: true,
+    mimetype: "video/mp4"
 })
 ```
 
@@ -82,5 +86,5 @@ that will be released with the production version.
 
 ## External bugs
 
-+ _ffmpeg_ is producing screenshots which mismatch the exact resolution
++ _ffmpeg_ is producing screenshots which mismatch the resolution
 specified by 1 unit.
