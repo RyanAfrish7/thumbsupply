@@ -38,12 +38,17 @@ class ThumbSupply {
     }
 
     _fetchThumbnailSupplier(file, options) {
-        const mime = mimetypes.lookup(file);
+        const mime = options.mimetype || mimetypes.lookup(file);
         let Supplier;
+
+        if (!mime) {
+            throw new E.UnknownFiletypeError(file, undefined, "Unable to probe mimetype from filename");
+        }
 
         if (this._thumbSuppliers.has(mime)) {
             Supplier = this._thumbSuppliers.get(mime);
         } else if (this._thumbSuppliers.has(mime.replace(/(.+\/)(.+)/, "$1*"))) {
+            // regex to replace application/json -> application/*
             Supplier = this._thumbSuppliers.get(mime.replace(/(.+\/)(.+)/, "$1*"));
         } else {
             throw new E.UnknownFiletypeError(file, mime, "FileType has no associated ThumbnailSupplier");
@@ -81,14 +86,14 @@ class ThumbSupply {
             fs.stat(file, (err, stats) => {
                 if (err) return reject(err);
 
-                const videoModifiedTime = stats.mtime;
+                const fileModifiedTime = stats.mtime;
                 const supplier = this._fetchThumbnailSupplier(file, options);
                 const thumbnailPath = supplier.getThumbnailLocation(file);
 
                 fs.stat(thumbnailPath, (err, stats) => {
                     if (err) return reject(err);
 
-                    if (stats.mtime.getTime() < videoModifiedTime.getTime()) {
+                    if (stats.mtime.getTime() < fileModifiedTime.getTime()) {
                         reject(new E.ThumbnailExpiredError(thumbnailPath, "Thumbnail Expired"));
                     } else {
                         resolve(thumbnailPath);
