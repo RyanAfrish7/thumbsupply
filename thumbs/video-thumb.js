@@ -56,11 +56,11 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
         if(videoDimension.width > videoDimension.height) {
             return {
                 width: this.size.width,
-                height: this.size.width * videoDimension.height / videoDimension.width
+                height: Math.round(this.size.width * videoDimension.height / videoDimension.width)
             }
         } else {
             return {
-                width: this.size.height * videoDimension.width / videoDimension.height,
+                width: Math.round(this.size.height * videoDimension.width / videoDimension.height),
                 height: this.size.height
             }
         }
