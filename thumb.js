@@ -25,7 +25,7 @@ class ThumbnailSupplier {
 
     constructor(options) {
         this.size = options.size;
-        this.cacheDir = path.join(os.homedir(), ".cache", "thumbsupply", this.size.name);
+        this.cacheDir = options.cacheDir || path.join(os.homedir(), ".cache", "thumbsupply", this.size.name);
         fs.ensureDirSync(this.cacheDir);
     }
 

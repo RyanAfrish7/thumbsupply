@@ -1,5 +1,6 @@
 const assert = require("assert");
 const path = require("path");
+const os = require("os");
 
 const fs = require("fs-extra");
 const sizeOf = require("image-size");
@@ -40,7 +41,19 @@ describe("thumbsupply", () => {
                 .catch(done);
         });
 
-        it("should be creating the thumbnail as specified", done => {
+        it("should create the thumbnail at configured directory", done => {
+            const cacheDir = path.join(os.homedir(), "tmp", "mySecretThumbs");
+
+            thumbsupply.generateThumbnail(SAMPLE_VIDEO, { cacheDir })
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    assert.ok(createdThumbnail.includes(cacheDir));
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("should be creating the thumbnail of requested resolution", done => {
             thumbsupply.generateThumbnail(SAMPLE_VIDEO, {
                 size: thumbsupply.ThumbSize.MEDIUM
             })
