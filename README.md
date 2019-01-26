@@ -2,11 +2,9 @@
 Asynchronous Node.js module to create, cache and fetch thumbnails from
 videos. It uses **ffmpeg** to generate thumbnails and **ES6 Promise**.
 
-NOT recommended for production use! The package is still in early
-stage and the public API's tend to change at any time.
+The API is more reliable now and is unlikely to have major changes before stable release.
 
-Any experimental usage is appreciated. Healthy criticisms, feature
-requests and issues are welcome.
+Healthy criticisms, feature requests and issues are welcome.
 
 *NOTE*: Since v0.2, the module no longer maintains thumbnails separately
 for each application. This behavior is intended to improve the performance
