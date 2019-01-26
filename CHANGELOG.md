@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.4.0]
+
+### Fixed
+
++ Fixed non integer numbers from being passed to ffmpeg 
+
+### Added
+
++ Allow configuring the cacheDir
+
 ## [0.3.1]
 
 ### Fixed

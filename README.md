@@ -42,7 +42,9 @@ It accepts options to control timestamp and size of the thumbnail. The
 `forceCreate` option can be used to generate the thumbnail every 
 time. Mimetype of the file can be specified using `mimetype` 
 option. It overrides mimetype derived from the file extension and 
-can be used for cases where such derivation is not possible. `cacheDir` allows configuring the directory to store the thumbnail cache. Unless there is an explicit need, it is good to use shared cache.
+can be used for cases where such derivation is not possible. `cacheDir` 
+allows configuring the directory to store the thumbnail cache. Unless 
+there is an explicit need, it is good to use shared cache.
 
 ```javascript
 const thumbsupply = require('thumbsupply');
