@@ -2,6 +2,15 @@ const ffmpeg = require("fluent-ffmpeg");
 
 const ThumbnailSupplier = require("../thumb.js");
 
+function ratioStringToNumber(str) {
+    const [numerator, denominator] = str
+        .split(":")
+        .map(function(n) {
+            return parseInt(n, 10)
+        });
+    return numerator / denominator;
+}
+
 class VideoThumbnailSupplier extends ThumbnailSupplier {
 
     constructor(options) {
@@ -16,6 +25,7 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
             this.getVideoDimension(video)
                 .then(this.getOptimalThumbnailResolution.bind(this))
                 .then(res => {
+                    console.log(res);
                     ffmpeg(video)
                         .on("end", () => resolve(super.getThumbnailLocation(video)))
                         .on("error", reject)
@@ -44,9 +54,11 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
         return new Promise((resolve, reject) => {
             ffmpeg.ffprobe(video, (err, metadata) => {
                 if (err) return reject(err);
+                const sar = ratioStringToNumber(metadata.streams[0].sample_aspect_ratio);
+
                 resolve({
-                    width: metadata.streams[0].width,
-                    height: metadata.streams[0].height
+                    width: metadata.streams[0].width * sar,
+                    height: metadata.streams[0].height 
                 });
             })
         });

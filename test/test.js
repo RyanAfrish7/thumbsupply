@@ -8,6 +8,10 @@ const sizeOf = require("image-size");
 const thumbsupply = require("../");
 
 const SAMPLE_VIDEO = "test/SampleVideo_1280x720_1mb.mp4";
+const PAR1 = "test/par1.mp4";
+const PAR2 = "test/par2.mp4";
+const DAR1 = "test/dar1.mp4";
+const DAR2 = "test/dar2.mp4";
 const LOOKUP_TIMEOUT = 60;
 
 function testResolution(file, expectedSize, done) {
@@ -18,6 +22,21 @@ function testResolution(file, expectedSize, done) {
         if (done) done();
     }
     catch (e) {
+        if (done) done(e);
+        else throw e;
+    }
+}
+
+function assertResolutionRatio(file, expectedRatio, done) {
+    try {
+        const size = sizeOf(file);
+        assert.strictEqual(
+            size.width / size.height,
+            expectedRatio,
+            "ratio does not match expected"
+        );
+        if (done) done();
+    } catch (e) {
         if (done) done(e);
         else throw e;
     }
@@ -63,6 +82,46 @@ describe("thumbsupply", () => {
                         width: 240,
                         height: 135
                     }, done);
+                })
+                .catch(done);
+        });
+
+        it("should create the thumbnail using the aspect ratio configured in the file (par1.mp4)", done => {
+            thumbsupply
+                .generateThumbnail(PAR1)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    assertResolutionRatio(thumbnail, 1 / 2, done);
+                })
+                .catch(done);
+        });
+          
+        it("should create the thumbnail using the aspect ratio configured in the file (par2.mp4)", done => {
+            thumbsupply
+                .generateThumbnail(PAR2)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    assertResolutionRatio(thumbnail, 5 / 4, done);
+                })
+                .catch(done);
+        });
+          
+        it("should create the thumbnail using the aspect ratio configured in the file (dar1.mp4)", done => {
+            thumbsupply
+                .generateThumbnail(DAR1)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    assertResolutionRatio(thumbnail, 16 / 9, done);
+                })
+                .catch(done);
+        });
+          
+        it("should create the thumbnail using the aspect ratio configured in the file (dar2.mp4)", done => {
+            thumbsupply
+                .generateThumbnail(DAR2)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    assertResolutionRatio(thumbnail, 1 / 2, done);
                 })
                 .catch(done);
         });
