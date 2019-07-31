@@ -13,8 +13,8 @@ const LOOKUP_TIMEOUT = 60;
 function testResolution(file, expectedSize, done) {
     try {
         const size = sizeOf(file);
-        assert.equal(size.width, expectedSize.width);
-        assert.equal(size.height, expectedSize.height);
+        assert.ok(Math.abs(size.width - expectedSize.width) <= 1);
+        assert.ok(Math.abs(size.height - expectedSize.height) <= 1);
         if (done) done();
     }
     catch (e) {

@@ -85,7 +85,6 @@ Developers can experiment with some of the non public API's to create
 thumbnail suppliers supporting new formats. Documentation on how to do
 that will be released with the production version.
 
-## External bugs
+## Limitations
 
-+ _ffmpeg_ is producing screenshots which mismatch the resolution
-specified by 1 unit.
++ Thumbnail sizes may get rounded off to next even number. Find more information [here](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/910)

@@ -11,8 +11,6 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
 
     createThumbnail(video) {
         return new Promise((resolve, reject) => {
-            const hash = ThumbnailSupplier.hashFile(video);
-
             this.getVideoDimension(video)
                 .then(this.getOptimalThumbnailResolution.bind(this))
                 .then(res => {
