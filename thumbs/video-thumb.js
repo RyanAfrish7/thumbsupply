@@ -47,14 +47,43 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
     return new Promise((resolve, reject) => {
       ffmpeg.ffprobe(video, (err, metadata) => {
         if (err) return reject(err);
-        const [widthRatioPart, heightRatioPart] = ratioStringToParts(
-          metadata.streams[0].display_aspect_ratio
+
+        const stream = metadata.streams.find(
+          stream => stream.codec_type === "video"
         );
 
-        resolve({
-          width: metadata.streams[0].width,
-          height: metadata.streams[0].width * (heightRatioPart / widthRatioPart)
-        });
+        const darString = stream.display_aspect_ratio;
+        const sarString = stream.sample_aspect_ratio;
+
+        // ffprobe returns aspect ratios of "0:1" or `undefined` if they're not specified.
+        // https://trac.ffmpeg.org/ticket/3798
+        if (darString && darString !== "0:1") {
+          // The DAR is specified so use it directly
+          const [widthRatioPart, heightRatioPart] = ratioStringToParts(
+            darString
+          );
+          const inverseDar = heightRatioPart / widthRatioPart;
+          resolve({
+            width: stream.width,
+            height: stream.width * inverseDar
+          });
+        } else if (sarString && sarString !== "0:1") {
+          // DAR missing but SAR specified, calculate display resolution using SAR and sample resolution.
+          const [widthRatioPart, heightRatioPart] = ratioStringToParts(
+            sarString
+          );
+          const sar = widthRatioPart / heightRatioPart;
+          resolve({
+            width: stream.width * sar,
+            height: stream.height
+          });
+        } else {
+          // SAR and DAR not specified so assume square pixels (use sample resolution as-is).
+          resolve({
+            width: stream.width,
+            height: stream.height
+          });
+        }
       });
     });
   }
