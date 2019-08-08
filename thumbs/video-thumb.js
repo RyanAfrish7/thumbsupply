@@ -54,7 +54,6 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
                 );
 
                 const darString = stream.display_aspect_ratio;
-                const sarString = stream.sample_aspect_ratio;
 
                 // ffprobe returns aspect ratios of "0:1" or `undefined` if they're not specified.
                 // https://trac.ffmpeg.org/ticket/3798
@@ -66,16 +65,8 @@ class VideoThumbnailSupplier extends ThumbnailSupplier {
                         width: stream.width,
                         height: stream.width * inverseDar
                     });
-                } else if (sarString && sarString !== "0:1") {
-                    // DAR missing but SAR specified, calculate display resolution using SAR and sample resolution.
-                    const [widthRatioPart, heightRatioPart] = ratioStringToParts(sarString);
-                    const sar = widthRatioPart / heightRatioPart;
-                    resolve({
-                        width: stream.width * sar,
-                        height: stream.height
-                    });
                 } else {
-                    // SAR and DAR not specified so assume square pixels (use sample resolution as-is).
+                    // DAR not specified so assume square pixels (use sample resolution as-is).
                     resolve({
                         width: stream.width,
                         height: stream.height
