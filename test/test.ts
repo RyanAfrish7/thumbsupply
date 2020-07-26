@@ -13,7 +13,7 @@ const SAR3 = "test/sar3.mp4";
 const SAR4 = "test/sar4.mp4";
 const LOOKUP_TIMEOUT = 60;
 
-function testResolution(filePath: string, expectedSize: ({ width: number, height: number }), done: Function) {
+function testResolution(filePath: string, expectedSize: ({ width: number, height: number }), done: (e?: Error) => void) {
     try {
         const size = imageSize(filePath);
         if (size.width === undefined || size.height === undefined) {
@@ -30,7 +30,7 @@ function testResolution(filePath: string, expectedSize: ({ width: number, height
     }
 }
 
-function assertResolutionRatio(filePath: string, expectedRatio: number, done: Function) {
+function assertResolutionRatio(filePath: string, expectedRatio: number, done: (e?: Error) => void) {
     try {
         const size = imageSize(filePath);
         if (size.width === undefined || size.height === undefined) {

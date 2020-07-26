@@ -26,14 +26,14 @@ export class ThumbSupplier {
 
     private getThumbnailFilePath(filePath: string, cacheDir: string) {
         const uri = url.pathToFileURL(filePath).toString();
-        return path.join(cacheDir, `${this.hashFn().update(uri).digest('hex')}.png`);
+        return path.join(cacheDir, `${this.hashFn().update(uri).digest("hex")}.png`);
     }
 
-    public registerFactory(factory: ThumbFactory) {
+    public registerFactory(factory: ThumbFactory): void {
         this.factories.push(factory);
     }
 
-    public getFactory(fileMetadata: FileMetadata) {
+    public getFactory(fileMetadata: FileMetadata): ThumbFactory | undefined {
         return this.factories.find(factory => factory.doesSupportFileFormat(fileMetadata));
     }
     
@@ -78,11 +78,6 @@ export class ThumbSupplier {
         const opts = {
             ...defaultOptions,
             ...options,
-        };
-
-        const fileMetadata: FileMetadata = {
-            filePath,
-            mimeType: options?.mimeType,
         };
 
         const cacheDir = opts.cacheDir ?? path.join(os.homedir(), ".cache", "thumbsupply", opts.size.name);

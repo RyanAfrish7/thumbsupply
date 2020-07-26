@@ -50,7 +50,7 @@ export class VideoThumbFactory extends ThumbFactory {
                     timestamps: [timestamp],
                     filename: path.basename(thumbConfig.filePath),
                     folder: path.dirname(thumbConfig.filePath),
-                })
+                });
         });
     }
 
@@ -100,17 +100,17 @@ export class VideoThumbFactory extends ThumbFactory {
         });
     }
 
-    private getOptimalThumbnailResolution(videoDimension: VideoDimension, size: Pick<ThumbSize, 'width' | 'height'>) {
+    private getOptimalThumbnailResolution(videoDimension: VideoDimension, size: Pick<ThumbSize, "width" | "height">) {
         if(videoDimension.width > videoDimension.height) {
             return {
                 width: size.width,
                 height: Math.round(size.width * videoDimension.height / videoDimension.width)
-            }
+            };
         } else {
             return {
                 width: Math.round(size.height * videoDimension.width / videoDimension.height),
                 height: size.height,
-            }
+            };
         }
     }
 }
