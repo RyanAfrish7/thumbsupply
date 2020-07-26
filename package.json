@@ -4,7 +4,8 @@
   "description": "Asynchronous thumbnail supplier with caching for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "build": "tsc",
+    "test": "mocha dist/test",
     "cover": "istanbul cover _mocha"
   },
   "keywords": [
@@ -16,15 +17,18 @@
   "license": "MIT",
   "repository": "https://github.com/RyanAfrish7/thumbsupply.git",
   "dependencies": {
-    "file-url": "^2.0.2",
+    "@types/mocha": "^8.0.0",
     "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^4.0.3",
-    "lodash": "^4.17.11",
-    "mime-types": "^2.1.20"
+    "lodash": "^4.17.19",
+    "mime-types": "^2.1.27",
+    "typescript": "^3.9.7"
   },
   "devDependencies": {
-    "image-size": "^0.6.3",
+    "@types/fluent-ffmpeg": "^2.1.14",
+    "@types/mime-types": "^2.1.0",
+    "@types/node": "^14.0.26",
+    "image-size": "^0.8.3",
     "istanbul": "^0.4.5",
-    "mocha": "^5.2.0"
+    "mocha": "^8.0.1"
   }
 }

@@ -81,4 +81,7 @@ file uri.
 
 ## [Unreleased]
 
-TO BE DOCUMENTED
+### Breaking changes
+
++ Migration to Typescript caused a change in the way the package is to be
+imported using require
