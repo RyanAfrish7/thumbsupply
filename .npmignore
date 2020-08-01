@@ -1,6 +1,12 @@
-.gitignore
-.idea/
+.nyc_output/
 .vscode/
-test/
+.idea/
+coverage/
 node_modules/
+src/
+test/
+.eslintrc.json
+.gitignore
+.mocharc.json
 .travis.yml
+tsconfig.json
