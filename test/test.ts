@@ -1,11 +1,10 @@
-const assert = require("assert");
-const path = require("path");
-const os = require("os");
+import * as assert from "assert";
+import * as path from "path";
+import * as os from "os";
+import * as fs from "fs";
+import { imageSize } from "image-size";
 
-const fs = require("fs-extra");
-const sizeOf = require("image-size");
-
-const thumbsupply = require("../");
+import thumbsupply, { ThumbSizes } from "../src";
 
 const SAMPLE_VIDEO = "test/SampleVideo_1280x720_1mb.mp4";
 const SAR1 = "test/sar1.mp4";
@@ -14,9 +13,13 @@ const SAR3 = "test/sar3.mp4";
 const SAR4 = "test/sar4.mp4";
 const LOOKUP_TIMEOUT = 60;
 
-function testResolution(file, expectedSize, done) {
+function testResolution(filePath: string, expectedSize: ({ width: number, height: number }), done: (e?: Error) => void) {
     try {
-        const size = sizeOf(file);
+        const size = imageSize(filePath);
+        if (size.width === undefined || size.height === undefined) {
+            throw new Error("Size is undefined");
+        }
+
         assert.ok(Math.abs(size.width - expectedSize.width) <= 1);
         assert.ok(Math.abs(size.height - expectedSize.height) <= 1);
         if (done) done();
@@ -27,9 +30,13 @@ function testResolution(file, expectedSize, done) {
     }
 }
 
-function assertResolutionRatio(file, expectedRatio, done) {
+function assertResolutionRatio(filePath: string, expectedRatio: number, done: (e?: Error) => void) {
     try {
-        const size = sizeOf(file);
+        const size = imageSize(filePath);
+        if (size.width === undefined || size.height === undefined) {
+            throw new Error("Size is undefined");
+        }
+
         assert.strictEqual(
             size.width / size.height,
             expectedRatio,
@@ -44,13 +51,13 @@ function assertResolutionRatio(file, expectedRatio, done) {
 
 describe("thumbsupply", () => {
     describe("#generateThumbnail()", () => {
-        let createdThumbnail;
+        let createdThumbnail: string;
 
         it("should be creating the thumbnail", done => {
             thumbsupply.generateThumbnail(SAMPLE_VIDEO, {
                 forceCreate: true
             })
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     testResolution(thumbnail, {
                         width: 480,
@@ -64,7 +71,7 @@ describe("thumbsupply", () => {
             const cacheDir = path.join(os.homedir(), "tmp", "mySecretThumbs");
 
             thumbsupply.generateThumbnail(SAMPLE_VIDEO, { cacheDir })
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     assert.ok(createdThumbnail.includes(cacheDir));
                     done();
@@ -74,9 +81,9 @@ describe("thumbsupply", () => {
 
         it("should be creating the thumbnail of requested resolution", done => {
             thumbsupply.generateThumbnail(SAMPLE_VIDEO, {
-                size: thumbsupply.ThumbSize.MEDIUM
+                size: ThumbSizes.MEDIUM
             })
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     testResolution(thumbnail, {
                         width: 240,
@@ -89,7 +96,7 @@ describe("thumbsupply", () => {
         it("should create the thumbnail using the aspect ratio configured in the file (sar1.mp4)", done => {
             thumbsupply
                 .generateThumbnail(SAR1)
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     assertResolutionRatio(thumbnail, 16 / 9, done);
                 })
@@ -99,7 +106,7 @@ describe("thumbsupply", () => {
         it("should create the thumbnail using the aspect ratio configured in the file (sar2.mp4)", done => {
             thumbsupply
                 .generateThumbnail(SAR2)
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     assertResolutionRatio(thumbnail, 1 / 2, done);
                 })
@@ -109,7 +116,7 @@ describe("thumbsupply", () => {
         it("should create the thumbnail using the aspect ratio configured in the file (sar3.mp4)", done => {
             thumbsupply
                 .generateThumbnail(SAR3)
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     assertResolutionRatio(thumbnail, 1 / 2, done);
                 })
@@ -119,7 +126,7 @@ describe("thumbsupply", () => {
         it("should create the thumbnail using the aspect ratio configured in the file (sar4.mp4)", done => {
             thumbsupply
                 .generateThumbnail(SAR4)
-                .then(thumbnail => {
+                .then((thumbnail: string) => {
                     createdThumbnail = thumbnail;
                     assertResolutionRatio(thumbnail, 5 / 4, done);
                 })
@@ -127,16 +134,16 @@ describe("thumbsupply", () => {
         });
 
         afterEach((done) => {
-            fs.remove(createdThumbnail, done);
+            fs.unlink(createdThumbnail, done);
         });
     });
 
     describe("#lookupThumbnail()", function () {
-        let createdThumbnail;
+        let createdThumbnail: string;
 
         before(() => {
             return thumbsupply.generateThumbnail(SAMPLE_VIDEO)
-                .then(thumbnail => createdThumbnail = thumbnail);
+                .then((thumbnail: string) => createdThumbnail = thumbnail);
         });
 
         it("should lookup and fetch the thumbnail", () => {
@@ -154,7 +161,7 @@ describe("thumbsupply", () => {
         });
 
         after((done) => {
-            fs.remove(createdThumbnail, done);
+            fs.unlink(createdThumbnail, done);
         });
     });
 });

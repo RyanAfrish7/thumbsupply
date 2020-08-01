@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 This project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - BREAKING
+
+### Changed
+
++ Exports type declarations.
+
++ Renamed option `mimetype` to `mimeType`.
+
++ Removed option `timestamp` (should consider before release).
+
++ Imports using `require("thumbsupply")` should now use
+`require("thumbsupply").default`.
+
 ## [0.4.0]
 
 ### Fixed
@@ -23,7 +36,7 @@ This project adheres to
 
 ### Added
 
-+ Allow mimetype to be passed in along with the options
++ Allow `mimetype` to be passed in along with the options
 
 ## [0.2.1]
 
@@ -78,7 +91,3 @@ file uri.
 ### Fixed
 
 + Reduced time to lookup for thumbnails.
-
-## [Unreleased]
-
-TO BE DOCUMENTED
