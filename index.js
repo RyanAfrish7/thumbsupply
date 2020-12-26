@@ -31,6 +31,7 @@ class ThumbSupply {
     constructor() {
         this._thumbSuppliers = new Map();
         this._registerThumbSupplier("video/*", require("./thumbs/video-thumb"));
+        this._registerThumbSupplier("image/*", require("./thumbs/image-thumb"));
     }
 
     _registerThumbSupplier(mimetype, ThumbSupplier) {

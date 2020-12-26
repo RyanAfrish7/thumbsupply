@@ -12,6 +12,7 @@ const SAR1 = "test/sar1.mp4";
 const SAR2 = "test/sar2.mp4";
 const SAR3 = "test/sar3.mp4";
 const SAR4 = "test/sar4.mp4";
+const TEST_IMAGE = "test/test-image.png"
 const LOOKUP_TIMEOUT = 60;
 
 function testResolution(file, expectedSize, done) {
@@ -122,6 +123,34 @@ describe("thumbsupply", () => {
                 .then(thumbnail => {
                     createdThumbnail = thumbnail;
                     assertResolutionRatio(thumbnail, 5 / 4, done);
+                })
+                .catch(done);
+        });
+
+        it("should create thumbnails for images", done => {
+            thumbsupply
+                .generateThumbnail(TEST_IMAGE)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    testResolution(thumbnail, {
+                        width: 360,
+                        height: 480
+                    }, done);
+                })
+                .catch(done);
+        });
+
+        it("should create medium thumbnails for images", done => {
+            thumbsupply
+                .generateThumbnail(TEST_IMAGE, { 
+                    size: thumbsupply.ThumbSize.MEDIUM
+                })
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    testResolution(thumbnail, {
+                        width: 180,
+                        height: 240
+                    }, done);
                 })
                 .catch(done);
         });
