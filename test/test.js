@@ -13,6 +13,7 @@ const SAR2 = "test/sar2.mp4";
 const SAR3 = "test/sar3.mp4";
 const SAR4 = "test/sar4.mp4";
 const TEST_IMAGE = "test/test-image.png"
+const TEST_GIF = "test/test-animated-gif.gif"
 const LOOKUP_TIMEOUT = 60;
 
 function testResolution(file, expectedSize, done) {
@@ -134,6 +135,19 @@ describe("thumbsupply", () => {
                     createdThumbnail = thumbnail;
                     testResolution(thumbnail, {
                         width: 360,
+                        height: 480
+                    }, done);
+                })
+                .catch(done);
+        });
+
+        it("should create thumbnails for animated gifs", done => {
+            thumbsupply
+                .generateThumbnail(TEST_GIF)
+                .then(thumbnail => {
+                    createdThumbnail = thumbnail;
+                    testResolution(thumbnail, {
+                        width: 480,
                         height: 480
                     }, done);
                 })

@@ -12,7 +12,8 @@ class ImageThumbnailSupplier extends ThumbnailSupplier {
     createThumbnail(image) {
         return new Promise((resolve, reject) => {
             const thumbnail = super.getThumbnailLocation(image);
-            convert([image, '-resize', `${this.size.height}x${this.size.width}`, thumbnail]).then(() => {
+
+            convert([image + "[0]", '-resize', `${this.size.height}x${this.size.width}`, thumbnail]).then(() => {
                 resolve(thumbnail);
             }).catch(err => {
                 reject(err);
