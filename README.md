@@ -1,6 +1,7 @@
 # thumbsupply
 Asynchronous Node.js module to create, cache and fetch thumbnails from
-videos. It uses **ffmpeg** to generate thumbnails and **ES6 Promise**.
+videos and images. Via an **ES6 Promise**-based API, it uses **ffmpeg** to generate
+thumbnails for videos and **imagemagick** to generate thumbnails for images.
 
 The API is more reliable now and is unlikely to have major changes before stable release.
 
@@ -15,6 +16,12 @@ and utilize caching as far as possible.
 ```bash
 npm install thumbsupply
 ```
+
+Depending on the type of thumbnails you would like to generate, the system
+will need to have additional software installed. Install these via your system's
+typical way of installing software (i.e. `apt`, `yum`, `brew`, etc).
+* To generate thumbnails for images, install `imagemagick`.
+* To generate thumbnails for videos, install `ffmpeg`.
 
 ## Usage
 
@@ -78,7 +85,7 @@ thumbsupply.lookupThumbnail('some-video.mp4')
 
 ## Features on the way
 
-_thumbsupply_ will soon be supporting music, pictures and so on. The
+_thumbsupply_ will soon be supporting music and other formats. The
 architecture required is already shipped.
 
 Developers can experiment with some of the non public API's to create
